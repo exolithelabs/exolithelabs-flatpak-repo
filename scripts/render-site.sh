@@ -9,7 +9,7 @@ fi
 output_dir=$1
 repository_dir=$2
 gpg_key=$3
-repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+repo_root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 
 # shellcheck disable=SC1091
 . "$repo_root/config/repository.env"
@@ -46,4 +46,3 @@ for template in "$repo_root"/templates/apps/*.flatpakref.in; do
     -e "s|@GPG_KEY@|$(escape_sed "$gpg_key")|g" \
     "$template" > "$destination"
 done
-

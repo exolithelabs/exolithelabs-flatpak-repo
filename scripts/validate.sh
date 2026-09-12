@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+repo_root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo_root"
 
 for script in scripts/*.sh; do
@@ -28,4 +28,3 @@ for manifest in manifests/*.yml manifests/*.yaml manifests/*.json; do
 done
 
 echo "Repository configuration is valid."
-

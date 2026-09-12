@@ -6,6 +6,7 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.node20
   - org.freedesktop.Sdk.Extension.rust-stable
 command: resume-builder
+branch: stable
 
 finish-args:
   - --share=ipc

@@ -1,0 +1,124 @@
+name: Publish Flatpak repository
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+          - arch: aarch64
+            runner: ubuntu-22.04-arm
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Flatpak tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder gnupg ostree
+          flatpak remote-add --user --if-not-exists flathub \
+            https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Import signing key
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          mkdir -m 700 "${RUNNER_TEMP}/gnupg"
+          key_id=$(sh scripts/import-signing-key.sh)
+          echo "FLATPAK_GPG_KEY_ID=$key_id" >> "$GITHUB_ENV"
+
+      - name: Build manifests
+        run: |
+          shopt -s nullglob
+          manifests=(manifests/*.yml manifests/*.yaml manifests/*.json)
+          if [[ "${#manifests[@]}" -eq 0 ]]; then
+            echo "No application manifests are connected yet."
+            exit 1
+          fi
+          mkdir repo-fragment
+          ostree init --repo=repo-fragment --mode=archive-z2
+          for manifest in "${manifests[@]}"; do
+            flatpak-builder --force-clean --disable-rofiles-fuse \
+              --user \
+              --arch="${{ matrix.arch }}" \
+              --install-deps-from=flathub \
+              --repo=repo-fragment \
+              --gpg-sign="$FLATPAK_GPG_KEY_ID" \
+              "build-${{ matrix.arch }}" "$manifest"
+          done
+          tar -czf "repo-${{ matrix.arch }}.tar.gz" repo-fragment
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repo-${{ matrix.arch }}
+          path: repo-${{ matrix.arch }}.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: fragments
+
+      - name: Install repository tooling
+        run: sudo apt-get update && sudo apt-get install -y flatpak gnupg ostree
+
+      - name: Import signing key
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          mkdir -m 700 "${RUNNER_TEMP}/gnupg"
+          key_id=$(sh scripts/import-signing-key.sh)
+          echo "FLATPAK_GPG_KEY_ID=$key_id" >> "$GITHUB_ENV"
+
+      - name: Combine and sign repository
+        run: |
+          mkdir combined-repo
+          ostree init --repo=combined-repo --mode=archive-z2
+          for archive in fragments/*/repo-*.tar.gz; do
+            workdir=$(mktemp -d)
+            tar -xzf "$archive" -C "$workdir"
+            while IFS= read -r ref; do
+              ostree pull-local --repo=combined-repo "$workdir/repo-fragment" "$ref"
+            done < <(ostree refs --repo="$workdir/repo-fragment")
+            rm -rf "$workdir"
+          done
+          flatpak build-update-repo --generate-static-deltas \
+            --gpg-sign="$FLATPAK_GPG_KEY_ID" combined-repo
+          public_key=$(gpg --batch --export "$FLATPAK_GPG_KEY_ID" | base64 --wrap=0)
+          sh scripts/render-site.sh public combined-repo "$public_key"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

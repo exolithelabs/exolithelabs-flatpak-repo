@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@REPOSITORY_TITLE@</title>
+  </head>
+  <body>
+    <main>
+      <h1>@REPOSITORY_TITLE@</h1>
+      <p>@REPOSITORY_DESCRIPTION@</p>
+      <p><a href="exolithelabs.flatpakrepo">Add the Exolithelabs Flatpak repository</a></p>
+      <p>Individual application installation links will appear here as applications are connected.</p>
+    </main>
+  </body>
+</html>
+

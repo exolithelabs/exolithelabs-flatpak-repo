@@ -1,0 +1,21 @@
+name: Validate repository
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install validation tools
+        run: sudo apt-get update && sudo apt-get install -y flatpak-builder shellcheck
+      - run: shellcheck scripts/*.sh
+      - run: sh scripts/validate.sh
+

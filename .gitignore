@@ -1,0 +1,12 @@
+/build/
+/dist/
+/public/
+/repo/
+/.flatpak-builder/
+/.gnupg/
+*.flatpak
+*.flatpakref.generated
+*.flatpakrepo.generated
+*.private.asc
+*.secret.asc
+

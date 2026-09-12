@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Resume Builder
+Comment=Build tailored, ATS-friendly resumes locally
+Exec=resume-builder
+Icon=io.github.exolithelabs.ResumeBuilder
+Terminal=false
+Categories=Office;Utility;
+Keywords=Resume;CV;PDF;Career;
+StartupNotify=true

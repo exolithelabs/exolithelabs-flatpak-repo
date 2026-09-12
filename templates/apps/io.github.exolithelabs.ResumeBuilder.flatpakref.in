@@ -1,0 +1,10 @@
+[Flatpak Ref]
+Name=io.github.exolithelabs.ResumeBuilder
+Branch=stable
+Title=Resume Builder
+Url=@REPOSITORY_URL@
+GPGKey=@GPG_KEY@
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
+IsRuntime=false
+SuggestRemoteName=@REMOTE_NAME@
+Homepage=@HOMEPAGE_URL@

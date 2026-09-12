@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.exolithelabs.ResumeBuilder</id>
+  <name>Resume Builder</name>
+  <summary>Build tailored, ATS-friendly resumes locally</summary>
+  <developer id="com.exolithelabs">
+    <name>Exolithelabs</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <description>
+    <p>Create, edit, preview, and export role-specific resumes from a local workspace. Resume data remains on the user's computer.</p>
+  </description>
+  <launchable type="desktop-id">io.github.exolithelabs.ResumeBuilder.desktop</launchable>
+  <provides>
+    <binary>resume-builder</binary>
+  </provides>
+  <url type="homepage">https://github.com/exolithelabs/resume-builder</url>
+  <url type="bugtracker">https://github.com/exolithelabs/resume-builder/issues</url>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0" date="2026-09-13" />
+  </releases>
+</component>

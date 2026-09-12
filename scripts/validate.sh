@@ -27,4 +27,18 @@ for manifest in manifests/*.yml manifests/*.yaml manifests/*.json; do
   fi
 done
 
+for desktop_file in metadata/*.desktop; do
+  [ -e "$desktop_file" ] || continue
+  if command -v desktop-file-validate >/dev/null 2>&1; then
+    desktop-file-validate "$desktop_file"
+  fi
+done
+
+for metainfo_file in metadata/*.metainfo.xml; do
+  [ -e "$metainfo_file" ] || continue
+  if command -v appstreamcli >/dev/null 2>&1; then
+    appstreamcli validate "$metainfo_file"
+  fi
+done
+
 echo "Repository configuration is valid."

@@ -1,0 +1,50 @@
+id: io.github.exolithelabs.ResumeBuilder
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node20
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: resume-builder
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --filesystem=home
+
+modules:
+  - name: resume-builder
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/node20/bin:/usr/lib/sdk/rust-stable/bin
+      build-args:
+        - --share=network
+      env:
+        CARGO_HOME: /run/build/resume-builder/cargo
+        npm_config_cache: /run/build/resume-builder/npm-cache
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    build-commands:
+      - npm ci --ignore-scripts
+      - npm run desktop:prepare
+      - npm run tauri -- build --no-bundle
+      - install -Dm755 src-tauri/target/release/resume-builder /app/bin/resume-builder
+      - install -d /app/lib/resume-builder
+      - cp -R src-tauri/target/release/app /app/lib/resume-builder/app
+      - cp -R src-tauri/target/release/runtime /app/lib/resume-builder/runtime
+      - install -Dm644 io.github.exolithelabs.ResumeBuilder.desktop /app/share/applications/io.github.exolithelabs.ResumeBuilder.desktop
+      - install -Dm644 io.github.exolithelabs.ResumeBuilder.metainfo.xml /app/share/metainfo/io.github.exolithelabs.ResumeBuilder.metainfo.xml
+      - install -Dm644 src-tauri/icons/128x128@2x.png /app/share/icons/hicolor/256x256/apps/io.github.exolithelabs.ResumeBuilder.png
+      - install -Dm644 LICENSE /app/share/licenses/io.github.exolithelabs.ResumeBuilder/LICENSE
+      - install -Dm644 NOTICE /app/share/licenses/io.github.exolithelabs.ResumeBuilder/NOTICE
+      - install -Dm644 THIRD-PARTY-NOTICES.md /app/share/licenses/io.github.exolithelabs.ResumeBuilder/THIRD-PARTY-NOTICES.md
+    sources:
+      - type: git
+        url: https://github.com/exolithelabs/resume-builder.git
+        commit: 72d7ad205b846922b737349c63f217a15f5fbd7a
+      - type: file
+        path: ../metadata/io.github.exolithelabs.ResumeBuilder.desktop
+      - type: file
+        path: ../metadata/io.github.exolithelabs.ResumeBuilder.metainfo.xml

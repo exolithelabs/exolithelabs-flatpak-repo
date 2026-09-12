@@ -4,13 +4,15 @@ Shared, GPG-signed Flatpak update repository for public Exolithelabs application
 
 This repository owns distribution infrastructure only. Application source code remains in each application's own repository. Add one Flatpak manifest and its referenced metadata per application under `manifests/` when that application is ready to connect.
 
-## Planned public endpoints
+## Planned public endpoints (GitHub Pages)
 
 - Repository descriptor: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/exolithelabs.flatpakrepo`
 - OSTree repository: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/repo/`
 - Application references: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/apps/<app>.flatpakref`
 
-Change `REPOSITORY_URL` and `HOMEPAGE_URL` in `config/repository.env` after configuring a custom domain.
+Enable GitHub Pages with **GitHub Actions** as the publishing source. You can connect `exolithelabs.com` later as a custom domain.
+
+This repository is deployed to GitHub Pages. The deployed Flatpak files must remain publicly readable for anonymous installation and updates.
 
 ## Initial setup
 
@@ -50,6 +52,8 @@ templates/apps/com.exolithelabs.Example.flatpakref.in
 
 The application manifest must pin every downloaded source by commit/version and checksum. It must also support both `x86_64` and `aarch64`, or explicitly document a supported-architecture restriction before the matrix is changed.
 
+Resume Builder is built from an immutable source commit using the GNOME SDK with its Node 20 and Rust extensions. The self-hosted build currently permits dependency downloads from the lockfiles during the build; future releases can replace this with generated offline npm and Cargo source lists.
+
 ## Local validation
 
 On Linux with Flatpak Builder installed:
@@ -59,6 +63,22 @@ sh scripts/validate.sh
 ```
 
 Generated repository data is not committed to `main`. GitHub Pages receives it as a deployment artifact.
+
+## Connected applications
+
+### Resume Builder
+
+Install from the published reference:
+
+```bash
+flatpak install --from https://exolithelabs.github.io/exolithelabs-flatpak-repo/apps/io.github.exolithelabs.ResumeBuilder.flatpakref
+```
+
+Run it with:
+
+```bash
+flatpak run io.github.exolithelabs.ResumeBuilder
+```
 
 ## Security
 
@@ -70,4 +90,3 @@ Generated repository data is not committed to `main`. GitHub Pages receives it a
 ## License
 
 The repository tooling and documentation are available under the Apache License 2.0.
-

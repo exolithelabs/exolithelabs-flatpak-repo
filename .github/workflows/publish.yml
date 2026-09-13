@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: main
 
@@ -60,7 +60,7 @@ jobs:
           - arch: aarch64
             runner: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: main
 
@@ -70,16 +70,6 @@ jobs:
           sudo apt-get install -y flatpak flatpak-builder gnupg ostree
           flatpak remote-add --user --if-not-exists flathub \
             https://dl.flathub.org/repo/flathub.flatpakrepo
-
-      - name: Import signing key
-        env:
-          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
-        run: |
-          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
-          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
-          mkdir -m 700 "${RUNNER_TEMP}/gnupg"
-          key_id=$(sh scripts/import-signing-key.sh)
-          echo "FLATPAK_GPG_KEY_ID=$key_id" >> "$GITHUB_ENV"
 
       - name: Build manifests
         run: |
@@ -97,12 +87,11 @@ jobs:
               --arch="${{ matrix.arch }}" \
               --install-deps-from=flathub \
               --repo=repo-fragment \
-              --gpg-sign="$FLATPAK_GPG_KEY_ID" \
               "build-${{ matrix.arch }}" "$manifest"
           done
           tar -czf "repo-${{ matrix.arch }}.tar.gz" repo-fragment
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: repo-${{ matrix.arch }}
           path: repo-${{ matrix.arch }}.tar.gz
@@ -120,9 +109,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: fragments
 
@@ -151,17 +140,27 @@ jobs:
             done < <(ostree refs --repo="$workdir/repo-fragment")
             rm -rf "$workdir"
           done
+          while IFS= read -r ref; do
+            commit=$(ostree rev-parse --repo=combined-repo "$ref")
+            ostree gpg-sign --repo=combined-repo "$commit" "$FLATPAK_GPG_KEY_ID"
+          done < <(ostree refs --repo=combined-repo)
+
           flatpak build-update-repo --generate-static-deltas \
             --gpg-sign="$FLATPAK_GPG_KEY_ID" combined-repo
           public_key=$(gpg --batch --export "$FLATPAK_GPG_KEY_ID" | base64 --wrap=0)
           sh scripts/render-site.sh public combined-repo "$public_key"
 
-      - uses: actions/configure-pages@v5
+      - name: Remove signing material from runner
+        if: always()
+        run: |
+          rm -rf -- "${GNUPGHOME:?}"
 
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: public
 
       - name: Deploy GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

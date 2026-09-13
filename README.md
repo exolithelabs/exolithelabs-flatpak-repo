@@ -89,6 +89,7 @@ flatpak run io.github.exolithelabs.ResumeBuilder
 
 - Only the public key is embedded in published `.flatpakrepo` and `.flatpakref` files.
 - The private key exists only in an offline backup and the encrypted GitHub Actions secret.
+- Resume Builder can access the user's Documents directory, not the entire home directory.
 - Application builds consume pinned, checksummed sources.
 - Pull-request workflows validate but never receive the signing secret or publish packages.
 

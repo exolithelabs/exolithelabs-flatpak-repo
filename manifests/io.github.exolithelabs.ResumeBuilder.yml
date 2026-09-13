@@ -44,7 +44,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/exolithelabs/resume-builder.git
-        commit: 72d7ad205b846922b737349c63f217a15f5fbd7a
+        commit: e7362bb430531da61980cb334b996e9cff3499fd
       - type: file
         path: ../metadata/io.github.exolithelabs.ResumeBuilder.desktop
       - type: file

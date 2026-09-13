@@ -63,6 +63,7 @@ sh scripts/validate.sh
 ```
 
 Generated repository data is not committed to `main`. GitHub Pages receives it as a deployment artifact.
+The published homepage automatically lists every application reference found under `templates/apps/`.
 
 ## Connected applications
 

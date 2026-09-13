@@ -71,6 +71,10 @@
         gap: 14px;
       }
 
+      .repo-options > * {
+        min-width: 0;
+      }
+
       .repo-line {
         display: flex;
         align-items: baseline;
@@ -91,6 +95,7 @@
         align-items: center;
         gap: 12px;
         width: 100%;
+        max-width: 100%;
         padding: 12px 14px;
         overflow: hidden;
         background: #f3f3f3;
@@ -138,6 +143,10 @@
       .copy-button svg {
         width: 16px;
         height: 16px;
+      }
+
+      .copy-button svg[hidden] {
+        display: none;
       }
 
       .visually-hidden {
@@ -250,6 +259,7 @@
       const copyIcon = document.getElementById("copy-icon");
       const checkIcon = document.getElementById("check-icon");
       const copyStatus = document.getElementById("copy-status");
+      let copyResetTimer;
 
       copyButton.addEventListener("click", async () => {
         const command = document.getElementById("command").textContent.trim();
@@ -262,7 +272,8 @@
           copyButton.title = "Copied";
           copyStatus.textContent = "Command copied";
 
-          window.setTimeout(() => {
+          window.clearTimeout(copyResetTimer);
+          copyResetTimer = window.setTimeout(() => {
             copyIcon.hidden = false;
             checkIcon.hidden = true;
             copyButton.setAttribute("aria-label", "Copy command");

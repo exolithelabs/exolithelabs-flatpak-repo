@@ -4,12 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@REPOSITORY_TITLE@</title>
+    <style>
+      .download-button {
+        display: inline-block;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.35rem;
+        background: #1769e0;
+        color: #fff;
+        text-decoration: none;
+      }
+    </style>
   </head>
   <body>
     <main>
       <h1>@REPOSITORY_TITLE@</h1>
       <p>@REPOSITORY_DESCRIPTION@</p>
-      <p><a href="exolithelabs.flatpakrepo">Add the Exolithe Labs Flatpak repository</a></p>
+      <p>
+        Download the Exolithe Labs Flatpak repository file:
+        <code>exolithelabs.flatpakrepo</code>
+        <a class="download-button" href="exolithelabs.flatpakrepo" download>Download</a>
+      </p>
+      <p>Or add it from a terminal:</p>
+      <pre><code>flatpak remote-add --if-not-exists exolithelabs \
+  https://flatpak.exolithelabs.com/exolithelabs.flatpakrepo</code></pre>
       @APPLICATION_LINKS@
     </main>
   </body>

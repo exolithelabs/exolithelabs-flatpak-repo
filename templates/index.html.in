@@ -9,7 +9,7 @@
     <main>
       <h1>@REPOSITORY_TITLE@</h1>
       <p>@REPOSITORY_DESCRIPTION@</p>
-      <p><a href="exolithelabs.flatpakrepo">Add the Exolithelabs Flatpak repository</a></p>
+      <p><a href="exolithelabs.flatpakrepo">Add the Exolithe Labs Flatpak repository</a></p>
       @APPLICATION_LINKS@
     </main>
   </body>

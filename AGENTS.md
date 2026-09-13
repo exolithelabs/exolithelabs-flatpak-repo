@@ -1,6 +1,6 @@
-# AGENTS.md — Exolithelabs Flatpak Repository
+# AGENTS.md — Exolithe Labs Flatpak Repository
 
-This repository is the shared Flatpak distribution and update infrastructure for Exolithelabs applications. It does not contain application source code.
+This repository is the shared Flatpak distribution and update infrastructure for Exolithe Labs applications. It does not contain application source code.
 
 ## Boundaries
 
@@ -21,4 +21,3 @@ This repository is the shared Flatpak distribution and update infrastructure for
 5. `.flatpakref` files point users to that repository for future updates.
 
 Run `sh scripts/validate.sh` before committing changes.
-

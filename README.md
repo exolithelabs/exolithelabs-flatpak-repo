@@ -1,6 +1,6 @@
-# Exolithelabs Flatpak Repository
+# Exolithe Labs Flatpak Repository
 
-Shared, GPG-signed Flatpak update repository for public Exolithelabs applications.
+Shared, GPG-signed Flatpak update repository for public Exolithe Labs applications.
 
 This repository owns distribution infrastructure only. Application source code remains in each application's own repository. Add one Flatpak manifest and its referenced metadata per application under `manifests/` when that application is ready to connect.
 

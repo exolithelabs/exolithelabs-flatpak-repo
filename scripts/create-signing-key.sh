@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-identity="${FLATPAK_GPG_IDENTITY:-Exolithelabs Flatpak Repository}"
+identity="${FLATPAK_GPG_IDENTITY:-Exolithe Labs Flatpak Repository}"
 output="${1:-exolithelabs-flatpak-private.asc}"
 
 if ! command -v gpg >/dev/null 2>&1; then
@@ -29,4 +29,3 @@ echo "Created signing key $key_id"
 echo "Private export: $output (back up securely; never commit)"
 echo "Public export:  exolithelabs-flatpak-public.asc (safe to share)"
 echo "GitHub secret:  FLATPAK_GPG_PRIVATE_KEY"
-

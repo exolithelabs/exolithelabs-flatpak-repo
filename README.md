@@ -6,11 +6,11 @@ This repository owns distribution infrastructure only. Application source code r
 
 ## Planned public endpoints (GitHub Pages)
 
-- Repository descriptor: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/exolithelabs.flatpakrepo`
-- OSTree repository: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/repo/`
-- Application references: `https://exolithelabs.github.io/exolithelabs-flatpak-repo/apps/<app>.flatpakref`
+- Repository descriptor: `https://flatpak.exolithelabs.com/exolithelabs.flatpakrepo`
+- OSTree repository: `https://flatpak.exolithelabs.com/repo/`
+- Application references: `https://flatpak.exolithelabs.com/apps/<app>.flatpakref`
 
-Enable GitHub Pages with **GitHub Actions** as the publishing source. You can connect `exolithelabs.com` later as a custom domain.
+GitHub Pages uses `flatpak.exolithelabs.com` as its custom domain with HTTPS enforced.
 
 This repository is deployed to GitHub Pages. The deployed Flatpak files must remain publicly readable for anonymous installation and updates.
 
@@ -71,7 +71,7 @@ Generated repository data is not committed to `main`. GitHub Pages receives it a
 Install from the published reference:
 
 ```bash
-flatpak install --from https://exolithelabs.github.io/exolithelabs-flatpak-repo/apps/io.github.exolithelabs.ResumeBuilder.flatpakref
+flatpak install --from https://flatpak.exolithelabs.com/apps/io.github.exolithelabs.ResumeBuilder.flatpakref
 ```
 
 Run it with:

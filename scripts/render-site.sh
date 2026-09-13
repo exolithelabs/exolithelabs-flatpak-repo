@@ -58,23 +58,40 @@ for template in "$repo_root"/templates/apps/*.flatpakref.in; do
   app_title=$(sed -n 's/^Title=//p' "$destination" | head -n 1)
   [ -n "$app_title" ] || app_title=$(sed -n 's/^Name=//p' "$destination" | head -n 1)
   app_file=$(basename "$destination")
-  printf '        <li><a href="apps/%s">%s</a></li>\n' \
-    "$(escape_html "$app_file")" "$(escape_html "$app_title")" >> "$application_items"
+  app_id=${app_file%.flatpakref}
+  app_metadata="$repo_root/metadata/$app_id.metainfo.xml"
+  app_description=''
+  if [ -f "$app_metadata" ]; then
+    app_description=$(sed -n 's|^[[:space:]]*<summary>\(.*\)</summary>[[:space:]]*$|\1|p' "$app_metadata" | head -n 1)
+  fi
+  [ -n "$app_description" ] || app_description="Install $app_title from Exolithe Labs."
+
+  {
+    printf '%s\n' '        <article class="app">' '          <div>'
+    printf '            <div class="app-name">%s</div>\n' "$(escape_html "$app_title")"
+    printf '            <p class="app-description">%s</p>\n' "$(escape_html "$app_description")"
+    printf '%s\n' '          </div>'
+    printf '          <a class="app-link" href="apps/%s" download>Install</a>\n' "$(escape_html "$app_file")"
+    printf '%s\n' '        </article>'
+  } >> "$application_items"
 done
 
 if [ -s "$application_items" ]; then
   {
-    printf '%s\n' '      <section>' '        <h2>Applications</h2>' '        <ul>'
+    printf '%s\n' '      <section aria-labelledby="applications-heading">' '        <h2 id="applications-heading">Applications</h2>' '        <div class="apps">'
     cat "$application_items"
-    printf '%s\n' '        </ul>' '      </section>'
+    printf '%s\n' '        </div>' '      </section>'
   } > "$application_links"
 else
-  printf '%s\n' '      <p>No applications are connected yet.</p>' > "$application_links"
+  printf '%s\n' '      <section aria-labelledby="applications-heading">' '        <h2 id="applications-heading">Applications</h2>' '        <p>No applications are connected yet.</p>' '      </section>' > "$application_links"
 fi
 
 sed \
   -e "s|@REPOSITORY_TITLE@|$(escape_sed "$REPOSITORY_TITLE")|g" \
   -e "s|@REPOSITORY_DESCRIPTION@|$(escape_sed "$REPOSITORY_DESCRIPTION")|g" \
+  -e "s|@REMOTE_NAME@|$(escape_sed "$REMOTE_NAME")|g" \
+  -e "s|@HOMEPAGE_URL@|$(escape_sed "$HOMEPAGE_URL")|g" \
+  -e "s|@CURRENT_YEAR@|$(date -u +%Y)|g" \
   "$repo_root/templates/index.html.in" > "$index_base"
 
 while IFS= read -r line || [ -n "$line" ]; do

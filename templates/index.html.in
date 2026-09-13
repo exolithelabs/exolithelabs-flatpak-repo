@@ -3,31 +3,276 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="@REPOSITORY_DESCRIPTION@">
     <title>@REPOSITORY_TITLE@</title>
+
     <style>
-      .download-button {
-        display: inline-block;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.35rem;
-        background: #1769e0;
-        color: #fff;
-        text-decoration: none;
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #fff;
+        color: #000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      main {
+        width: min(calc(100% - 32px), 680px);
+        margin: 0 auto;
+        padding: 72px 0 40px;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 1.25;
+        letter-spacing: -0.025em;
+      }
+
+      h2 {
+        margin-top: 48px;
+        margin-bottom: 16px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .intro {
+        margin-top: 8px;
+      }
+
+      a {
+        color: #000;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      a:hover {
+        text-decoration-thickness: 2px;
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid #000;
+        outline-offset: 3px;
+      }
+
+      .repo-options {
+        display: grid;
+        gap: 14px;
+      }
+
+      .repo-line {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .label {
+        font-weight: 500;
+      }
+
+      .terminal-label {
+        margin-bottom: 6px;
+      }
+
+      .command-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 14px;
+        overflow: hidden;
+        background: #f3f3f3;
+        border: 1px solid #dedede;
+        border-radius: 6px;
+      }
+
+      .command-scroll {
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .command-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      code {
+        display: block;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: nowrap;
+      }
+
+      .copy-button {
+        display: grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        color: #000;
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        border-radius: 4px;
+      }
+
+      .copy-button:hover {
+        background: #e5e5e5;
+      }
+
+      .copy-button svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        white-space: nowrap;
+        clip-path: inset(50%);
+        border: 0;
+      }
+
+      .apps {
+        border-top: 1px solid #000;
+      }
+
+      .app {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 14px 0;
+        border-bottom: 1px solid #000;
+      }
+
+      .app-name {
+        font-weight: 600;
+      }
+
+      .app-description {
+        margin-top: 2px;
+        font-size: 14px;
+      }
+
+      .app-link {
+        flex-shrink: 0;
+        font-size: 14px;
+      }
+
+      footer {
+        margin-top: 64px;
+        padding-top: 18px;
+        font-size: 13px;
+        border-top: 1px solid #000;
+      }
+
+      @media (max-width: 520px) {
+        main {
+          padding-top: 48px;
+        }
+
+        h1 {
+          font-size: 26px;
+        }
+
+        h2 {
+          margin-top: 40px;
+        }
       }
     </style>
   </head>
+
   <body>
     <main>
-      <h1>@REPOSITORY_TITLE@</h1>
-      <p>@REPOSITORY_DESCRIPTION@</p>
-      <p>
-        Download the Exolithe Labs Flatpak repository file:
-        <code>exolithelabs.flatpakrepo</code>
-        <a class="download-button" href="exolithelabs.flatpakrepo" download>Download</a>
-      </p>
-      <p>Or add it from a terminal:</p>
-      <pre><code>flatpak remote-add --if-not-exists exolithelabs \
-  https://flatpak.exolithelabs.com/exolithelabs.flatpakrepo</code></pre>
+      <header>
+        <h1>@REPOSITORY_TITLE@</h1>
+        <p class="intro">@REPOSITORY_DESCRIPTION@</p>
+      </header>
+
+      <section aria-labelledby="add-repository-heading">
+        <h2 id="add-repository-heading">Add Repository</h2>
+
+        <div class="repo-options">
+          <div class="repo-line">
+            <span class="label">Download:</span>
+            <a href="exolithelabs.flatpakrepo" download>exolithelabs.flatpakrepo</a>
+          </div>
+
+          <div>
+            <div class="label terminal-label">Terminal:</div>
+            <div class="command-box">
+              <div class="command-scroll">
+                <code id="command">flatpak remote-add --if-not-exists @REMOTE_NAME@ @HOMEPAGE_URL@exolithelabs.flatpakrepo</code>
+              </div>
+
+              <button class="copy-button" id="copy-button" type="button" aria-label="Copy command" title="Copy command">
+                <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+                  <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <svg id="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                  <path d="M5 12l4 4L19 6"></path>
+                </svg>
+              </button>
+              <span class="visually-hidden" id="copy-status" role="status" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       @APPLICATION_LINKS@
+
+      <footer>&copy; @CURRENT_YEAR@ Exolithe Labs.</footer>
     </main>
+
+    <script>
+      const copyButton = document.getElementById("copy-button");
+      const copyIcon = document.getElementById("copy-icon");
+      const checkIcon = document.getElementById("check-icon");
+      const copyStatus = document.getElementById("copy-status");
+
+      copyButton.addEventListener("click", async () => {
+        const command = document.getElementById("command").textContent.trim();
+
+        try {
+          await navigator.clipboard.writeText(command);
+          copyIcon.hidden = true;
+          checkIcon.hidden = false;
+          copyButton.setAttribute("aria-label", "Command copied");
+          copyButton.title = "Copied";
+          copyStatus.textContent = "Command copied";
+
+          window.setTimeout(() => {
+            copyIcon.hidden = false;
+            checkIcon.hidden = true;
+            copyButton.setAttribute("aria-label", "Copy command");
+            copyButton.title = "Copy command";
+            copyStatus.textContent = "";
+          }, 1200);
+        } catch {
+          copyStatus.textContent = "Could not copy the command";
+        }
+      });
+    </script>
   </body>
 </html>

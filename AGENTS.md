@@ -15,9 +15,11 @@ This repository is the shared Flatpak distribution and update infrastructure for
 ## Release model
 
 1. An application publishes immutable, checksummed release inputs.
-2. Its manifest in this repository is updated to those inputs.
+2. A trusted release dispatch verifies the source tag and updates its pinned manifest, or the manifest is updated manually.
 3. CI builds x86_64 and aarch64 repository fragments on native runners.
 4. The publish job combines, signs, and deploys one shared repository.
 5. `.flatpakref` files point users to that repository for future updates.
+
+Resume Builder release tags automatically dispatch their exact commit and version to the publish workflow. Keep `workflow_dispatch` available as a manual recovery path.
 
 Run `sh scripts/validate.sh` before committing changes.

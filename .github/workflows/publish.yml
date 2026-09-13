@@ -2,13 +2,54 @@ name: Publish Flatpak repository
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [resume-builder-release]
+
+concurrency:
+  group: publish-flatpak-repository
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
+  prepare:
+    name: Prepare release manifest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Verify and pin Resume Builder release
+        if: github.event_name == 'repository_dispatch'
+        env:
+          SOURCE_COMMIT: ${{ github.event.client_payload.source_commit }}
+          RELEASE_TAG: ${{ github.event.client_payload.release_tag }}
+          RELEASE_VERSION: ${{ github.event.client_payload.version }}
+        run: sh scripts/update-resume-builder-release.sh "$SOURCE_COMMIT" "$RELEASE_TAG" "$RELEASE_VERSION" "$(date -u +%F)"
+
+      - name: Commit updated pin
+        if: github.event_name == 'repository_dispatch'
+        env:
+          RELEASE_TAG: ${{ github.event.client_payload.release_tag }}
+        run: |
+          if git diff --quiet; then
+            echo "Resume Builder is already pinned to this release."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifests/io.github.exolithelabs.ResumeBuilder.yml \
+            metadata/io.github.exolithelabs.ResumeBuilder.metainfo.xml
+          git commit -m "Publish Resume Builder $RELEASE_TAG"
+          git push origin HEAD:main
+
   build:
     name: Build ${{ matrix.arch }}
+    needs: prepare
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -20,6 +61,8 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Install Flatpak tooling
         run: |

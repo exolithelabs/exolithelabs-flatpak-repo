@@ -35,7 +35,7 @@ This repository is deployed to GitHub Pages. The deployed Flatpak files must rem
 
 4. Add at least one application manifest under `manifests/` and its `.flatpakref.in` template under `templates/apps/`.
 
-5. Run **Publish Flatpak repository** manually from the Actions tab. The workflow builds on native x86_64 and ARM64 runners, signs both commits, combines them into one repository, and deploys the static result to GitHub Pages.
+5. Run **Publish Flatpak repository** manually from the Actions tab for the initial deployment. The workflow builds on native x86_64 and ARM64 runners, signs both commits, combines them into one repository, and deploys the static result to GitHub Pages.
 
 The publish workflow intentionally refuses to run with no application manifests or without the signing-key secret.
 
@@ -52,7 +52,11 @@ templates/apps/com.exolithelabs.Example.flatpakref.in
 
 The application manifest must pin every downloaded source by commit/version and checksum. It must also support both `x86_64` and `aarch64`, or explicitly document a supported-architecture restriction before the matrix is changed.
 
-Resume Builder is built from an immutable source commit using the GNOME SDK with its Node 20 and Rust extensions. The self-hosted build currently permits dependency downloads from the lockfiles during the build; future releases can replace this with generated offline npm and Cargo source lists.
+Resume Builder is built from an immutable source commit using the GNOME SDK with its Node 20 and Rust extensions. A successful tagged Resume Builder release sends a `resume-builder-release` repository dispatch. The publish workflow verifies that the public tag points to the supplied commit, updates the manifest and AppStream release entry, commits that pin, then builds and deploys both architectures automatically. Manual workflow dispatch remains available as a recovery path.
+
+The source repository needs a `FLATPAK_REPOSITORY_TOKEN` Actions secret containing a fine-grained token limited to this repository with **Contents: read and write** permission. The token can create the dispatch event but never receives the Flatpak signing key.
+
+The GitHub-hosted build currently permits dependency downloads from the lockfiles during the build; future releases can replace this with generated offline npm and Cargo source lists.
 
 ## Local validation
 
